@@ -1,3 +1,6 @@
+## Requirements
+<li>PHP >= 7.0.0</li>
+
 ## Installation
 
 Clone the repository
@@ -18,8 +21,11 @@ Copy the example env file and make the required configuration changes in the .en
 
 Generate a new application key
 
-<pre><code>php artisan key:generate</pre></code>
+<pre><code>
+    php artisan key:generate
+    php artisan serve
+</pre></code>
 
-<pre><code>php artisan serve</pre></code>
+<pre><code></pre></code>
 
 You can now access the server at http://localhost:8000
