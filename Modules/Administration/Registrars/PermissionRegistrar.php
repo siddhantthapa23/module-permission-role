@@ -2,19 +2,13 @@
 
 namespace Modules\Administration\Registrars;
 
-use Illuminate\Auth\Access\Gate;
 use Illuminate\Support\Collection;
 use Illuminate\Cache\CacheManager;
+use Illuminate\Contracts\Auth\Access\Gate;
 use Spatie\Permission\PermissionRegistrar as SpatiePermissionRegistrar;
 
 class PermissionRegistrar extends SpatiePermissionRegistrar
 {
-    /** @var \Illuminate\Contracts\Auth\Access\Gate */
-    protected $gate;
-
-    /** @var \Illuminate\Cache\CacheManager */
-    protected $cacheManager;
-
     /** @var string */
     protected $moduleClass;
 

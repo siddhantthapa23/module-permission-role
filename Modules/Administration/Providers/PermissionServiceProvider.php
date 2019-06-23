@@ -2,17 +2,29 @@
 
 namespace Modules\Administration\Providers;
 
-use Spatie\Permission\PermissionServiceProvider as SpatiePermissionServiceProvider;
+use Illuminate\Filesystem\Filesystem;
 use Modules\Administration\Registrars\PermissionRegistrar;
+use Spatie\Permission\PermissionServiceProvider as SpatiePermissionServiceProvider;
 
 class PermissionServiceProvider extends SpatiePermissionServiceProvider
 {
-    public function boot(PermissionRegistrar $permissionLoader)
+    /**
+     * Boot the application events.
+     * 
+     * @return void
+     */
+    public function boot(PermissionRegistrar $permissionLoader, Filesystem $filesystem)
     {
-        $permissionLoader->registerPermissions();
+        parent::boot($permissionLoader, $filesystem);
+    }
 
-        $this->app->singleton(PermissionRegistrar::class, function($app) use ($permissionLoader) {
-            return $permissionLoader;
-        });
+    /**
+     * Register the service provider.
+     * 
+     * @return void
+     */
+    public function register()
+    {
+        parent::register();
     }
 }

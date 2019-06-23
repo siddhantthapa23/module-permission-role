@@ -3,6 +3,16 @@
 return [
 
     'models' => [
+        /*
+         * When using the "HasModules" trait, we need to know which
+         * Eloquent model should be used to retrieve your modules. Of course, it
+         * is often just the "Module" model but you may use whatever you like.
+         *
+         * The model you want to use as a Module model needs to implement the
+         * `Modules\Administration\Contracts\Module` contract.
+         */
+
+        'module' => Modules\Administration\Entities\Module::class, 
 
         /*
          * When using the "HasPermissions" trait from this package, we need to know which
