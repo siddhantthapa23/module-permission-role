@@ -3,11 +3,13 @@
 namespace Modules\Administration\Entities;
 
 use Spatie\Permission\Guard;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Modules\Administration\Contracts\Module as ModuleContract;
 use Modules\Administration\Exceptions\Module\ModuleAlreadyExists;
 use Modules\Administration\Exceptions\Module\ModuleDoesNotExist;
+use Modules\Administration\Registrars\PermissionRegistrar;
 
 class Module extends Model implements ModuleContract
 {
@@ -87,8 +89,8 @@ class Module extends Model implements ModuleContract
     /**
      * Get the current cached modules.
      */
-    protected static function getModule(array $params = [])
+    protected static function getModules(array $params = []): Collection
     {
-        // need to work on body part.
+        return app(PermissionRegistrar::class)->getModules($params);
     }
 }
