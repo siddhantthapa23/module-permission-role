@@ -24,7 +24,7 @@ class ModulesTableSeeder extends Seeder
                 'guard_name' => 'web',
                 'icon' => 'fa fa-cog',
                 'order_position' => '1',
-                'is_active' => '1',
+                'status' => '1',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -35,7 +35,7 @@ class ModulesTableSeeder extends Seeder
                 'guard_name' => 'web',
                 'icon' => 'fa fa-users',
                 'order_position' => '1',
-                'is_active' => '1',
+                'status' => '1',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -46,7 +46,7 @@ class ModulesTableSeeder extends Seeder
                 'guard_name' => 'web',
                 'icon' => 'fa fa-user',
                 'order_position' => '2',
-                'is_active' => '1',
+                'status' => '1',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
