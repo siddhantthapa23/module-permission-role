@@ -5,11 +5,12 @@ namespace Modules\Administration\Entities;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Modules\Administration\Traits\HasModules;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasRoles, ThrottlesLogins;
+    use Notifiable, HasRoles, HasModules, ThrottlesLogins;
 
     /**
      * The attributes that are mass assignable.
