@@ -21,6 +21,10 @@ class ViewComposerServiceProvider extends ServiceProvider
             'backend.sidebar',
             'App\Http\ViewComposers\Backend\SidebarComposer'
         );
+        View::composer(
+            'backend.breadcrumb',
+            'App\Http\ViewComposers\Backend\BreadCrumbComposer'
+        );
     }
 
     /**
