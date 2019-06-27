@@ -3,9 +3,9 @@
         <!-- To the right -->
         <div class="pull-right hidden-xs">
             <strong> Powered By: 
-                <a href="#">MPR</a></strong>
+                <a href="#">Company Name</a></strong>
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; 2019 MPR. All Rights Reserved</strong>
+        <strong>Copyright &copy; 2019 Company Name. All Rights Reserved</strong>
     </footer>
 </div>

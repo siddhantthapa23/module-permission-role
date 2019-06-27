@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 
-class AdministrationController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,7 @@ class AdministrationController extends Controller
      */
     public function index()
     {
-        return view('administration::index');
+        return view('administration::user.index');
     }
 
     /**
@@ -23,7 +23,7 @@ class AdministrationController extends Controller
      */
     public function create()
     {
-        return view('administration::create');
+        return view('administration::user.create');
     }
 
     /**
@@ -41,7 +41,7 @@ class AdministrationController extends Controller
      */
     public function show()
     {
-        return view('administration::show');
+        return view('administration::user.show');
     }
 
     /**
@@ -50,7 +50,7 @@ class AdministrationController extends Controller
      */
     public function edit()
     {
-        return view('administration::edit');
+        return view('administration::user.edit');
     }
 
     /**
