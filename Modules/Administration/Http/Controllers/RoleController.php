@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Administration\Repositories\Role\RoleRepository;
+use Modules\Administration\Http\Requests\Role\StoreRequest;
 
 class RoleController extends Controller
 {
@@ -39,11 +40,12 @@ class RoleController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param  Request $request
+     * @param  StoreRequest $request
      * @return Response
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
+        dd($request->all());
     }
 
     /**
