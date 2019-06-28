@@ -5,16 +5,27 @@ namespace Modules\Administration\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Modules\Administration\Repositories\Role\RoleRepository;
 
 class RoleController extends Controller
 {
+    private $role;
+
+    public function __construct(
+        RoleRepository $role
+    )
+    {
+        $this->role = $role;
+    }
+
     /**
      * Display a listing of the resource.
      * @return Response
      */
     public function index()
     {
-        return view('administration::role.index');
+        return view('administration::role.index')
+            ->withRoles($this->role->all());
     }
 
     /**
