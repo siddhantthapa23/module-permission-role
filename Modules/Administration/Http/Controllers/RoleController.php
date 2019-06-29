@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Administration\Repositories\Role\RoleRepository;
 use Modules\Administration\Http\Requests\Role\StoreRequest;
+use Modules\Administration\Exceptions\Role\CreateRoleErrorException;
 
 class RoleController extends Controller
 {
@@ -39,13 +40,21 @@ class RoleController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
      * @param  StoreRequest $request
-     * @return Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreRequest $request)
     {
-        dd($request->all());
+        try {
+            $data = $request->except('_token');
+
+            $this->role->createRole($data);
+            return redirect()->route('administration.roles.index')
+                    ->withSuccessMessage('Role has been created successfully.');
+        } catch (CreateRoleErrorException $e) {
+            return redirect()->back()->withInput()
+                ->withErrorMessage($e->getMessage());
+        }
     }
 
     /**
