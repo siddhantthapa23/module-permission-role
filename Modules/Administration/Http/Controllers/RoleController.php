@@ -2,12 +2,14 @@
 
 namespace Modules\Administration\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Administration\Repositories\Role\RoleRepository;
 use Modules\Administration\Http\Requests\Role\StoreRequest;
+use Modules\Administration\Http\Requests\Role\UpdateRequest;
 use Modules\Administration\Exceptions\Role\CreateRoleErrorException;
+use Modules\Administration\Exceptions\Role\UpdateRoleErrorException;
+use Modules\Administration\Repositories\Role\RoleRepositoryEloquent;
 
 class RoleController extends Controller
 {
@@ -50,7 +52,7 @@ class RoleController extends Controller
 
             $this->role->createRole($data);
             return redirect()->route('administration.roles.index')
-                    ->withSuccessMessage('Role has been created successfully.');
+                ->withSuccessMessage('Role has been created successfully.');
         } catch (CreateRoleErrorException $e) {
             return redirect()->back()->withInput()
                 ->withErrorMessage($e->getMessage());
@@ -61,34 +63,75 @@ class RoleController extends Controller
      * Show the specified resource.
      * @return Response
      */
-    public function show()
+    public function show($id)
     {
-        return view('administration::role.show');
+        $role = $this->role->findRole($id);
+        return view('administration::role.show')
+            ->withRole($role)
+            ->withPermissions($role->getAllPermissions());
     }
 
     /**
      * Show the form for editing the specified resource.
      * @return Response
      */
-    public function edit()
+    public function edit($id)
     {
-        return view('administration::role.edit');
+        return view('administration::role.edit')
+            ->withRole($this->role->findRole($id));
     }
 
     /**
      * Update the specified resource in storage.
-     * @param  Request $request
+     * @param  UpdateRequest $request
+     * @param int $id
      * @return Response
      */
-    public function update(Request $request)
+    public function update(UpdateRequest $request, $id)
     {
+        try {
+            $data = $request->except('_token');
+
+            $role = $this->role->findRole($id);
+            $roleRepo = new RoleRepositoryEloquent($role);
+            $roleRepo->updateRole($data);
+
+            return redirect()->route('administration.roles.index')
+                ->withSuccessMessage('Role has been created successfully.');
+        } catch (UpdateRoleErrorException $e) {
+            return redirect()->back()->withInput()
+                ->withErrorMessage($e->getMessage());
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      * @return Response
      */
-    public function destroy()
+    public function destroy($id)
     {
+        try {
+            $role = $this->role->findRole($id);
+
+            if($role->name == 'admin') {
+                return response()->json([
+                    'type' => 'warning',
+                    'message' => 'Sorry, you are not allowed to delete admin role.'
+                ], 200);
+            }
+    
+            $roleRepo = new RoleRepositoryEloquent($role);
+            $roleRepo->deleteRole();
+
+            return response()->json([
+                'type' => 'success',
+                'message' => 'Role has been deleted successfully.'
+            ], 200);
+        } catch (\PDOException $e) {
+             return response()->json([
+                'type' => 'error',
+                'message' => $e->getMessage()
+            ], 200);
+        }
     }
 }
