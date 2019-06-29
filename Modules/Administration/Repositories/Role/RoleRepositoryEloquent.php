@@ -6,6 +6,9 @@ use App\Repositories\BaseRepositoryEloquent;
 use Modules\Administration\Entities\Role;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Modules\Administration\Exceptions\Role\CreateRoleErrorException;
+use Modules\Administration\Exceptions\Role\RoleNotFoundException;
+use Modules\Administration\Exceptions\Role\UpdateRoleErrorException;
 
 class RoleRepositoryEloquent extends BaseRepositoryEloquent implements RoleRepository
 {
@@ -61,9 +64,9 @@ class RoleRepositoryEloquent extends BaseRepositoryEloquent implements RoleRepos
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
-    public function deleteRole(): bool
+    public function deleteRole(): ?bool
     {
         return $this->model->delete();
     }

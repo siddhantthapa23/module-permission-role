@@ -12,5 +12,5 @@ interface RoleRepository
 
     public function updateRole(array $data): bool;
 
-    public function deleteRole(): bool;
+    public function deleteRole(): ?bool;
 }
