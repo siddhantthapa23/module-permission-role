@@ -5,6 +5,8 @@ namespace Modules\Administration\Http\Controllers;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Administration\Repositories\Role\RoleRepository;
+use Modules\Administration\Repositories\Module\ModuleRepository;
+use Modules\Administration\Repositories\Permission\PermissionRepository;
 use Modules\Administration\Http\Requests\Role\StoreRequest;
 use Modules\Administration\Http\Requests\Role\UpdateRequest;
 use Modules\Administration\Exceptions\Role\CreateRoleErrorException;
@@ -15,11 +17,19 @@ class RoleController extends Controller
 {
     private $role;
 
+    private $module;
+
+    private $permission;
+
     public function __construct(
-        RoleRepository $role
+        RoleRepository $role,
+        ModuleRepository $module,
+        PermissionRepository $permission
     )
     {
         $this->role = $role;
+        $this->module = $module;
+        $this->permission = $permission;
     }
 
     /**
@@ -133,5 +143,18 @@ class RoleController extends Controller
                 'message' => $e->getMessage()
             ], 200);
         }
+    }
+
+    /**
+     * Display attach permission view.
+     * @param int $id
+     * @return Response
+     */
+    public function attachPermissionView($id)
+    {
+        return view('administration::role.attach_permission')
+            ->withRole($this->role->findRole($id))
+            ->withModules($this->module->withHierarchy())
+            ->withPermissions($this->permission->groupByGuardName());
     }
 }

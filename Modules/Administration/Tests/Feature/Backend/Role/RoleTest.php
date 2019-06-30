@@ -12,7 +12,7 @@ class RoleTest extends TestCase
     /**
      * @test
      */
-    public function it_can_show_the_index_role_page()
+    public function it_can_show_the_index_page()
     {
         $permission = factory(Permission::class)->create(['name' => 'view role']);
         $user = factory(User::class)->create();
@@ -159,5 +159,25 @@ class RoleTest extends TestCase
             ->delete(route('administration.roles.destroy', $role->id))
             ->assertStatus(200)
             ->assertExactJson(['type' => 'success', 'message' => 'Role has been deleted successfully.']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_show_the_attach_permission_view_page()
+    {
+        $permission = factory(Permission::class)->create(['name' => 'view role']);
+
+        $role = factory(Role::class)->create(['name' => 'admin']);
+
+        $user = factory(User::class)->create();
+        $user->givePermissionTo($permission);
+        $user->assignRole($role);
+
+        $this->actingAs($user)
+            ->get(route('administration.roles.attach-permission', $role->id))
+            ->assertStatus(200)
+            ->assertSee('Attach Permission')
+            ->assertSee('Save');
     }
 }
