@@ -9,8 +9,6 @@ use Modules\Administration\Entities\User;
 
 class RoleTest extends TestCase
 {
-    /************************************* Positive tests ********************************************/
-
     /**
      * @test
      */
@@ -89,8 +87,8 @@ class RoleTest extends TestCase
             ->get(route('administration.roles.show', $role->id))
             ->assertStatus(200)
             ->assertSee('Role Details')
-            ->assertSee('Name')
-            ->assertSee('Guard Name')
+            ->assertSee($role->name)
+            ->assertSee($role->guard_name)
             ->assertSee('Permissions');
     }
 
@@ -112,7 +110,7 @@ class RoleTest extends TestCase
             ->get(route('administration.roles.edit', $role->id))
             ->assertStatus(200)
             ->assertSee('Update Role')
-            ->assertSee('Name')
+            ->assertSee($role->name)
             ->assertSee('Submit');
     }
 
@@ -162,6 +160,4 @@ class RoleTest extends TestCase
             ->assertStatus(200)
             ->assertExactJson(['type' => 'success', 'message' => 'Role has been deleted successfully.']);
     }
-
-    /************************************* Positive tests ********************************************/
 }
