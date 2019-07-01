@@ -9,16 +9,31 @@ use Modules\Administration\Entities\User;
 
 class RoleTest extends TestCase
 {
+    protected $user;
+
+    protected $role;
+
+    /**
+     * Setup the test
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->user = factory(User::class)->create();
+        $this->role = factory(Role::class)->create();
+    }
+
     /**
      * @test
      */
     public function it_can_show_the_index_page()
     {
         $permission = factory(Permission::class)->create(['name' => 'view role']);
-        $user = factory(User::class)->create();
-        $user->givePermissionTo($permission);
+        
+        $this->user->givePermissionTo($permission);
 
-        $this->actingAs($user)
+        $this->actingAs($this->user)
             ->get(route('administration.roles.index'))
             ->assertStatus(200)
             ->assertSee('SN')
@@ -35,11 +50,10 @@ class RoleTest extends TestCase
         $permissions = collect(['view role', 'create role'])->each(function($item) {
             return factory(Permission::class)->create(['name' => $item]);
         });
+        
+        $this->user->givePermissionTo($permissions);
 
-        $user = factory(User::class)->create();
-        $user->givePermissionTo($permissions);
-
-        $this->actingAs($user)
+        $this->actingAs($this->user)
             ->get(route('administration.roles.create'))
             ->assertStatus(200)
             ->assertSee('Create Role')
@@ -62,10 +76,9 @@ class RoleTest extends TestCase
             return factory(Permission::class)->create(['name' => $item]);
         });
 
-        $user = factory(User::class)->create();
-        $user->givePermissionTo($permissions);
+        $this->user->givePermissionTo($permissions);
 
-        $this->actingAs($user)
+        $this->actingAs($this->user)
             ->post(route('administration.roles.store'), $data)
             ->assertStatus(302)
             ->assertRedirect(route('administration.roles.index'))
@@ -78,17 +91,15 @@ class RoleTest extends TestCase
     public function it_can_show_the_show_role_page()
     {
         $permission = factory(Permission::class)->create(['name' => 'view role']);
-        $role = factory(Role::class)->create();
+        
+        $this->user->givePermissionTo($permission);
 
-        $user = factory(User::class)->create();
-        $user->givePermissionTo($permission);
-
-        $this->actingAs($user)
-            ->get(route('administration.roles.show', $role->id))
+        $this->actingAs($this->user)
+            ->get(route('administration.roles.show', $this->role->id))
             ->assertStatus(200)
             ->assertSee('Role Details')
-            ->assertSee($role->name)
-            ->assertSee($role->guard_name)
+            ->assertSee($this->role->name)
+            ->assertSee($this->role->guard_name)
             ->assertSee('Permissions');
     }
 
@@ -100,17 +111,14 @@ class RoleTest extends TestCase
         $permissions = collect(['view role', 'edit role'])->each(function($item) {
             return factory(Permission::class)->create(['name' => $item]);
         });
+        
+        $this->user->givePermissionTo($permissions);
 
-        $role = factory(Role::class)->create();
-
-        $user = factory(User::class)->create();
-        $user->givePermissionTo($permissions);
-
-        $this->actingAs($user)
-            ->get(route('administration.roles.edit', $role->id))
+        $this->actingAs($this->user)
+            ->get(route('administration.roles.edit', $this->role->id))
             ->assertStatus(200)
             ->assertSee('Update Role')
-            ->assertSee($role->name)
+            ->assertSee($this->role->name)
             ->assertSee('Submit');
     }
 
@@ -129,13 +137,10 @@ class RoleTest extends TestCase
             return factory(Permission::class)->create(['name' => $item]);
         });
 
-        $role = factory(Role::class)->create();
+        $this->user->givePermissionTo($permissions);
 
-        $user = factory(User::class)->create();
-        $user->givePermissionTo($permissions);
-
-        $this->actingAs($user)
-            ->put(route('administration.roles.update', $role->id), $data)
+        $this->actingAs($this->user)
+            ->put(route('administration.roles.update', $this->role->id), $data)
             ->assertStatus(302)
             ->assertRedirect(route('administration.roles.index'))
             ->assertSessionHas('success_message', 'Role has been created successfully.');
@@ -149,14 +154,11 @@ class RoleTest extends TestCase
         $permissions = collect(['view role', 'delete role'])->each(function($item) {
             return factory(Permission::class)->create(['name' => $item]);
         });
+        
+        $this->user->givePermissionTo($permissions);
 
-        $role = factory(Role::class)->create();
-
-        $user = factory(User::class)->create();
-        $user->givePermissionTo($permissions);
-
-        $this->actingAs($user)
-            ->delete(route('administration.roles.destroy', $role->id))
+        $this->actingAs($this->user)
+            ->delete(route('administration.roles.destroy', $this->role->id))
             ->assertStatus(200)
             ->assertExactJson(['type' => 'success', 'message' => 'Role has been deleted successfully.']);
     }
@@ -169,12 +171,11 @@ class RoleTest extends TestCase
         $permission = factory(Permission::class)->create(['name' => 'view role']);
 
         $role = factory(Role::class)->create(['name' => 'admin']);
+        
+        $this->user->givePermissionTo($permission);
+        $this->user->assignRole($role);
 
-        $user = factory(User::class)->create();
-        $user->givePermissionTo($permission);
-        $user->assignRole($role);
-
-        $this->actingAs($user)
+        $this->actingAs($this->user)
             ->get(route('administration.roles.attach-permission', $role->id))
             ->assertStatus(200)
             ->assertSee('Attach Permission')
@@ -192,15 +193,12 @@ class RoleTest extends TestCase
 
         $permission = factory(Permission::class)->create(['name' => 'view role']);
 
-        $role = factory(Role::class)->create();
+        $this->user->givePermissionTo($permission);
 
-        $user = factory(User::class)->create();
-        $user->givePermissionTo($permission);
-
-        $this->actingAs($user)
-            ->post(route('administration.roles.attach-permission.store', $role->id), $requestData)
+        $this->actingAs($this->user)
+            ->post(route('administration.roles.attach-permission.store', $this->role->id), $requestData)
             ->assertStatus(302)
-            ->assertRedirect(route('administration.roles.show', $role->id))
+            ->assertRedirect(route('administration.roles.show', $this->role->id))
             ->assertSessionHas('success_message', 'Permission has been attached successfully.');
     }
 
@@ -213,11 +211,10 @@ class RoleTest extends TestCase
 
         $role = factory(Role::class)->create(['name' => 'admin']);
 
-        $user = factory(User::class)->create();
-        $user->givePermissionTo($permission);
-        $user->assignRole($role);
+        $this->user->givePermissionTo($permission);
+        $this->user->assignRole($role);
 
-        $this->actingAs($user)
+        $this->actingAs($this->user)
             ->delete(route('administration.roles.remove-permission', [$role->id, $permission->id]))
             ->assertStatus(200)
             ->assertExactJson(['type' => 'success', 'message' => 'Permission has been removed successfully.']);

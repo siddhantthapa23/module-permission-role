@@ -4,7 +4,6 @@ namespace Tests\Unit\Role;
 
 use Tests\TestCase;
 use Modules\Administration\Entities\Role;
-use Modules\Administration\Entities\Permission;
 use Modules\Administration\Repositories\Role\RoleRepositoryEloquent;
 use Modules\Administration\Exceptions\Role\CreateRoleErrorException;
 use Modules\Administration\Exceptions\Role\RoleNotFoundException;
@@ -12,6 +11,18 @@ use Modules\Administration\Exceptions\Role\UpdateRoleErrorException;
 
 class RoleTest extends TestCase
 {
+    protected $role;
+
+    /**
+     * Setup the test
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->role = factory(Role::class)->create();
+    }
+
     /********************************** Positive tests ********************************************/
 
     /**
@@ -37,13 +48,12 @@ class RoleTest extends TestCase
      */
     public function it_can_show_role()
     {
-        $role = factory(Role::class)->create();
         $roleRepo = new RoleRepositoryEloquent(new Role);
-        $found = $roleRepo->findRole($role->id);
+        $found = $roleRepo->findRole($this->role->id);
 
         $this->assertInstanceOf(Role::class, $found);
-        $this->assertEquals($role->name, $found->name);
-        $this->assertEquals($role->guard_name, $found->guard_name);
+        $this->assertEquals($this->role->name, $found->name);
+        $this->assertEquals($this->role->guard_name, $found->guard_name);
     }
 
     /**
@@ -51,19 +61,17 @@ class RoleTest extends TestCase
      */
     public function it_can_update_role()
     {
-        $role = factory(Role::class)->create();
-
         $data = [
             'name' => $this->faker->word,
             'guard_name' => 'web'
         ];
 
-        $roleRepo = new RoleRepositoryEloquent($role);
+        $roleRepo = new RoleRepositoryEloquent($this->role);
         $update = $roleRepo->updateRole($data);
 
         $this->assertTrue($update);
-        $this->assertEquals($data['name'], $role->name);
-        $this->assertEquals($data['guard_name'], $role->guard_name);
+        $this->assertEquals($data['name'], $this->role->name);
+        $this->assertEquals($data['guard_name'], $this->role->guard_name);
     }
 
     /**
@@ -71,9 +79,7 @@ class RoleTest extends TestCase
      */
     public function it_can_delete_role()
     {
-        $role = factory(Role::class)->create();
-
-        $roleRepo = new RoleRepositoryEloquent($role);
+        $roleRepo = new RoleRepositoryEloquent($this->role);
         $delete = $roleRepo->deleteRole();
 
         $this->assertTrue($delete);
@@ -112,8 +118,7 @@ class RoleTest extends TestCase
     {
         $this->expectException(UpdateRoleErrorException::class);
 
-        $role = factory(Role::class)->create();
-        $roleRepo = new RoleRepositoryEloquent($role);
+        $roleRepo = new RoleRepositoryEloquent($this->role);
 
         $data = ['name' => null];
         $roleRepo->updateRole($data);
