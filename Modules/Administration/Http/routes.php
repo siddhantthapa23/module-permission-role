@@ -44,7 +44,7 @@ Route::group(['middleware' => 'web', 'prefix' => 'administration', 'as' => 'admi
         /** role attach permission routes */
         Route::get('roles/{id}/attach-permission', 'RoleController@attachPermissionView')->name('roles.attach-permission')->middleware('role:admin');
         Route::post('roles/{id}/attach-permission', 'RoleController@storePermissions')->name('roles.attach-permission.store');
-        Route::Delete('roles/{roleId}/permissions/{permissionId}', 'RoleController@removePermission')->middleware('role:admin');
+        Route::Delete('roles/{roleId}/permissions/{permissionId}', 'RoleController@removePermission')->name('roles.remove-permission')->middleware('role:admin');
         /** role attach permission routes */
     });
     /** role routes with permission middleware end */

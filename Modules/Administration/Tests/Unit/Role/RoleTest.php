@@ -4,6 +4,7 @@ namespace Tests\Unit\Role;
 
 use Tests\TestCase;
 use Modules\Administration\Entities\Role;
+use Modules\Administration\Entities\Permission;
 use Modules\Administration\Repositories\Role\RoleRepositoryEloquent;
 use Modules\Administration\Exceptions\Role\CreateRoleErrorException;
 use Modules\Administration\Exceptions\Role\RoleNotFoundException;

@@ -9,6 +9,7 @@ use Modules\Administration\Repositories\Module\ModuleRepository;
 use Modules\Administration\Repositories\Permission\PermissionRepository;
 use Modules\Administration\Http\Requests\Role\StoreRequest;
 use Modules\Administration\Http\Requests\Role\UpdateRequest;
+use Modules\Administration\Http\Requests\Role\PermissionStoreRequest;
 use Modules\Administration\Exceptions\Role\CreateRoleErrorException;
 use Modules\Administration\Exceptions\Role\UpdateRoleErrorException;
 use Modules\Administration\Repositories\Role\RoleRepositoryEloquent;
@@ -156,5 +157,80 @@ class RoleController extends Controller
             ->withRole($this->role->findRole($id))
             ->withModules($this->module->withHierarchy())
             ->withPermissions($this->permission->groupByGuardName());
+    }
+
+    /**
+     * @param \Modules\Administration\Http\Requests\Role\PermissionStoreRequest $request
+     * @param int $id
+     * @return Reponse
+     */
+    public function storePermissions(PermissionStoreRequest $request, int $id)
+    {
+        $role = $this->role->findRole($id);
+
+        /** get match permission array. */
+        $permissionArr = array_map(function ($permissionId) use ($role){
+            return $role->getMatchPermissions($permissionId);
+        }, $request->permissions);
+
+        $role = $role->syncPermissions($permissionArr);
+
+        $permissions = $role->getAllPermissions()->toArray();
+        /** search for 'view' string in permission name and get match permission array. */
+        $matchPermissionArr = array_filter($permissions, function($permission) {
+            return strpos($permission['name'], 'view') !== false;
+        });
+
+        if(count($matchPermissionArr) > 0) {
+            $filteredModuleArr = filter_modules($this->module->all()->toArray(), $matchPermissionArr);
+            $role = $role->syncModules($filteredModuleArr);
+        } else {
+            $role = $role->syncModules([]); // reset all modules for role.
+        }
+
+        if($role) {
+            return redirect()->route('administration.roles.show', $id)
+                ->withSuccessMessage('Permission has been attached successfully.');
+        }
+        return redirect()->back()->withInput()
+            ->withErrorMessage('Internal server error, Please try again later.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * @param int $roleId
+     * @param int $permissionId
+     * @return Response
+     */
+    public function removePermission(int $roleId, int $permissionId)
+    {
+        $role = $this->role->findRole($roleId);
+        $permission = $this->permission->find($permissionId);
+        $role = $role->revokePermissionTo($permission);
+        
+        $permissions = $role->getAllPermissions()->toArray();
+
+        /** search for 'view' string in permission name and get match permission array. */
+        $matchPermissionArr = array_filter($permissions, function($permission) {
+            return strpos($permission['name'], 'view') !== false;
+        });
+
+        if(count($matchPermissionArr) > 0) {
+            $filteredModuleArr = filter_modules($this->module->all()->toArray(), $matchPermissionArr);
+            $role = $role->syncModules($filteredModuleArr);
+        } else {
+            $role = $role->syncModules([]); // reset all modules for user.
+        }
+
+        if($role) {
+            return response()->json([
+                'type' => 'success',
+                'message' => 'Permission has been removed successfully.'
+            ], 200);
+        }
+        return response()->json([
+            'type' => 'error',
+            'message' => 'Internal serve error, please try again later.'
+        ], 200);
     }
 }

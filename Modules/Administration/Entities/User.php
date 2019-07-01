@@ -4,9 +4,9 @@ namespace Modules\Administration\Entities;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 use Modules\Administration\Traits\HasModules;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {

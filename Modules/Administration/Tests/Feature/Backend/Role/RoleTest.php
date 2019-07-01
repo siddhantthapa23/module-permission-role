@@ -180,4 +180,46 @@ class RoleTest extends TestCase
             ->assertSee('Attach Permission')
             ->assertSee('Save');
     }
+
+    /**
+     * @test
+     */
+    public function it_can_attach_permission_to_role()
+    {
+        $requestData = [
+            'permissions' => [1,2]
+        ];
+
+        $permission = factory(Permission::class)->create(['name' => 'view role']);
+
+        $role = factory(Role::class)->create();
+
+        $user = factory(User::class)->create();
+        $user->givePermissionTo($permission);
+
+        $this->actingAs($user)
+            ->post(route('administration.roles.attach-permission.store', $role->id), $requestData)
+            ->assertStatus(302)
+            ->assertRedirect(route('administration.roles.show', $role->id))
+            ->assertSessionHas('success_message', 'Permission has been attached successfully.');
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_remove_permission_from_role()
+    {
+        $permission = factory(Permission::class)->create(['name' => 'view role']);
+
+        $role = factory(Role::class)->create(['name' => 'admin']);
+
+        $user = factory(User::class)->create();
+        $user->givePermissionTo($permission);
+        $user->assignRole($role);
+
+        $this->actingAs($user)
+            ->delete(route('administration.roles.remove-permission', [$role->id, $permission->id]))
+            ->assertStatus(200)
+            ->assertExactJson(['type' => 'success', 'message' => 'Permission has been removed successfully.']);
+    }
 }

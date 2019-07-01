@@ -70,4 +70,5 @@ class RoleRepositoryEloquent extends BaseRepositoryEloquent implements RoleRepos
     {
         return $this->model->delete();
     }
+
 }
