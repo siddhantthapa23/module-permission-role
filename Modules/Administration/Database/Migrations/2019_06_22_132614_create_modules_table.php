@@ -20,7 +20,7 @@ class CreateModulesTable extends Migration
             $table->string('guard_name');
             $table->string('icon')->nullable()->default(null);
             $table->smallInteger('order_position')->unsigned()->default(0);
-            $table->enum('status', [0,1])->default(0);
+            $table->enum('is_active', [0,1])->default(0);
             $table->timestamps();
         });
     }

@@ -3,6 +3,8 @@
 namespace Modules\Administration\Contracts;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 interface Module 
 {
@@ -12,6 +14,20 @@ interface Module
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function roles(): BelongsToMany;
+
+    /**
+     * A module belongs to some users of the model associated with its guard.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
+     */
+    public function users(): MorphToMany;
+    
+    /**
+     * A module can have many child modules.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany;
+     */
+    public function childrens(): HasMany;
 
     /**
      * Find a module by its name and guard name.

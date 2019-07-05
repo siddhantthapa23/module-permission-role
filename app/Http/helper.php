@@ -18,13 +18,26 @@ if(! function_exists('filter_modules')) {
                 }
                 if(stripos($module['name'], $permission['group_name']) !== false) {
                     if($tempParent['id'] == $module['parent_id'] && !in_array($tempParent, $filteredModuleArr)) {
-                        array_push($filteredModuleArr, $tempParent);
+                        array_push($filteredModuleArr, $tempParent['id']);
                     }
-                    array_push($filteredModuleArr, $module);
+                    array_push($filteredModuleArr, $module['id']);
                 }
             }
         }
 
         return $filteredModuleArr;
+    }
+}
+
+/**
+ * make slug for both normal and unicode string.
+ * 
+ * @param string $str
+ * @return string
+ */
+if(! function_exists('make_slug')) {
+    function make_slug($str) 
+    {
+        return preg_replace('/\s+/u', '-', mb_strtolower(trim($str)));
     }
 }

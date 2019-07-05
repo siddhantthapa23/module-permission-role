@@ -12,7 +12,7 @@ return [
          * `Modules\Administration\Contracts\Module` contract.
          */
 
-        'module' => Modules\Administration\Entities\Module::class, // added model
+        'module' => Modules\Administration\Entities\Module::class, // added
 
         /*
          * When using the "HasPermissions" trait from this package, we need to know which
@@ -23,7 +23,7 @@ return [
          * `Spatie\Permission\Contracts\Permission` contract.
          */
 
-        'permission' => Modules\Administration\Entities\Permission::class, // extended model
+        'permission' => Modules\Administration\Entities\Permission::class, // extended
 
         /*
          * When using the "HasRoles" trait from this package, we need to know which
@@ -34,7 +34,7 @@ return [
          * `Spatie\Permission\Contracts\Role` contract.
          */
 
-        'role' => Modules\Administration\Entities\Role::class, // extended model
+        'role' => Modules\Administration\Entities\Role::class, // extended
 
     ],
 

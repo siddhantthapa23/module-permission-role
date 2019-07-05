@@ -5,6 +5,7 @@ namespace Modules\Administration\Registrars;
 use Illuminate\Support\Collection;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Contracts\Auth\Access\Gate;
+use Modules\Administration\Contracts\Module;
 use Spatie\Permission\PermissionRegistrar as SpatiePermissionRegistrar;
 
 class PermissionRegistrar extends SpatiePermissionRegistrar

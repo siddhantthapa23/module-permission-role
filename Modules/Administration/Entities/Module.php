@@ -10,6 +10,8 @@ use Modules\Administration\Contracts\Module as ModuleContract;
 use Modules\Administration\Exceptions\Module\ModuleAlreadyExists;
 use Modules\Administration\Exceptions\Module\ModuleDoesNotExist;
 use Modules\Administration\Registrars\PermissionRegistrar;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Module extends Model implements ModuleContract
 {
@@ -48,6 +50,25 @@ class Module extends Model implements ModuleContract
             config('permission.table_names.role_has_modules'),
             'module_id',
             'role_id'
+        );
+    }
+
+    public function users(): MorphToMany
+    {
+        return $this->morphedByMany(
+            getModelForGuard($this->attributes['guard_name']),
+            'model',
+            config('permission.table_names.model_has_modules'),
+            'module_id',
+            config('permission.column_names.model_morph_key')
+        );
+    }
+
+    public function childrens() : HasMany
+    {
+        return $this->hasMany(
+            config('permission.models.module'), 
+            'parent_id'
         );
     }
 
