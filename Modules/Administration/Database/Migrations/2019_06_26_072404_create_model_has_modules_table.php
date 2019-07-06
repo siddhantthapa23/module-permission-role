@@ -13,16 +13,22 @@ class CreateModelHasModulesTable extends Migration
      */
     public function up()
     {
-        Schema::create('model_has_modules', function (Blueprint $table) {
+        $tableNames = config('permission.table_names');
+        $columnNames = config('permission.column_names');
+
+        Schema::create($tableNames['model_has_modules'], function (Blueprint $table) use ($tableNames, $columnNames) {
             $table->unsignedInteger('module_id');
 
             $table->string('model_type');
-            $table->unsignedBigInteger('model_id');
-            $table->index(['model_id', 'model_type',]);
+            $table->unsignedBigInteger($columnNames['model_morph_key']);
+            $table->index([$columnNames['model_morph_key'], 'model_type',]);
 
-            $table->foreign('module_id')->references('id')->on('modules')->onDelete('cascade');
+            $table->foreign('module_id')
+                ->references('id')
+                ->on($tableNames['modules'])
+                ->onDelete('cascade');
 
-            $table->primary(['module_id', 'model_id', 'model_type'],
+            $table->primary(['module_id', $columnNames['model_morph_key'], 'model_type'],
                     'model_has_modules_module_model_type_primary');
         });
     }

@@ -4,6 +4,15 @@ namespace Modules\Administration\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
+use Modules\Administration\Repositories\Module\ModuleRepository;
+use Modules\Administration\Repositories\Module\ModuleRepositoryEloquent;
+use Modules\Administration\Repositories\Permission\PermissionRepository;
+use Modules\Administration\Repositories\Permission\PermissionRepositoryEloquent;
+use Modules\Administration\Repositories\Role\RoleRepository;
+use Modules\Administration\Repositories\Role\RoleRepositoryEloquent;
+use Modules\Administration\Repositories\User\UserRepository;
+use Modules\Administration\Repositories\User\UserRepositoryEloquent;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class AdministrationServiceProvider extends ServiceProvider
 {
@@ -26,6 +35,10 @@ class AdministrationServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->registerFactories();
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+
+        Relation::morphMap([
+            'user' => \Modules\Administration\Entities\User::class
+        ]);
     }
 
     /**
@@ -35,7 +48,22 @@ class AdministrationServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(
+            ModuleRepository::class,
+            ModuleRepositoryEloquent::class
+        );
+        $this->app->singleton(
+            PermissionRepository::class,
+            PermissionRepositoryEloquent::class
+        );
+        $this->app->singleton(
+            RoleRepository::class,
+            RoleRepositoryEloquent::class
+        );
+        $this->app->singleton(
+            UserRepository::class,
+            UserRepositoryEloquent::class
+        );
     }
 
     /**
