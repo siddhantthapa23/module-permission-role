@@ -2,10 +2,13 @@
 
 namespace Modules\Administration\Repositories\User;
 
-use App\Repositories\BaseRepositoryEloquent;
-use Modules\Administration\Entities\User;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
+use Modules\Administration\Entities\User;
+use App\Repositories\BaseRepositoryEloquent;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Modules\Administration\Exceptions\User\CreateUserErrorException;
+use Modules\Administration\Exceptions\User\UserNotFoundException;
+use Modules\Administration\Exceptions\User\UpdateUserErrorException;
 
 class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepository
 {
@@ -26,11 +29,11 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
     public function createUser(array $data): User
     {
         try {
-            $data['password'] = bcrypt($data['password']);
+            $data['password'] = (array_key_exists('password', $data)) ? bcrypt($data['password']) : '';
             $data['created_by'] = auth()->id();
             return $this->model->create($data);
-        } catch (CreateUserErrorException $e) {
-            throw new CreateErrorException($e);
+        } catch (QueryException $e) {
+            throw new CreateUserErrorException($e);
         }
     }
 
@@ -66,7 +69,7 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
     /**
      * @return bool
      */
-    public function deleteUser(): bool
+    public function deleteUser(): ?bool
     {
         return $this->model->delete();
     }

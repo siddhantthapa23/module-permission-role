@@ -5,6 +5,9 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Modules\Administration\Entities\User;
 use Modules\Administration\Repositories\User\UserRepositoryEloquent;
+use Modules\Administration\Exceptions\User\CreateUserErrorException;
+use Modules\Administration\Exceptions\User\UserNotFoundException;
+use Modules\Administration\Exceptions\User\UpdateUserErrorException;
 
 class UserTest extends TestCase
 {
@@ -126,4 +129,52 @@ class UserTest extends TestCase
     }
 
     /************************************************** Positive Tests **************************************************/
+
+    /************************************************** Negative Tests **************************************************/
+
+    /**
+     * @test
+     */
+    public function it_should_throw_an_error_when_the_required_columns_are_not_filled()
+    {
+        $this->expectException(CreateUserErrorException::class);
+        
+        $userRepo = new UserRepositoryEloquent(new User);
+        $userRepo->createUser([]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_throw_not_found_error_exception_when_the_user_is_not_found()
+    {
+        $this->expectException(UserNotFoundException::class);
+
+        $userRepo = new UserRepositoryEloquent(new User);
+        $userRepo->findUser(999);
+    }
+
+    /**
+     * @test
+     */
+    public function it_should_throw_update_error_exception_when_user_has_failed_to_update()
+    {
+        $this->expectException(UpdateUserErrorException::class);
+
+        $userRepo = new UserRepositoryEloquent($this->user);
+        $userRepo->updateUser(['first_name' => null]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_when_deleting_a_non_existing_user()
+    {
+        $userRepo = new UserRepositoryEloquent(new User);
+        $deleted = $userRepo->deleteUser();
+
+        $this->assertNull($deleted);
+    }
+
+    /************************************************** Negative Tests **************************************************/
 }
