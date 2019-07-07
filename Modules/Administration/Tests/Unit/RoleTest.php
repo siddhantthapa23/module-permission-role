@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Role;
+namespace Tests\Unit;
 
 use Tests\TestCase;
 use Modules\Administration\Entities\Role;
