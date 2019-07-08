@@ -2,9 +2,13 @@
 
 @section('head_css')
 <style>
-    .pr {
-        color: #a94442;
-    }
+.pr {
+    color: #a94442;
+}
+.px-0 {
+    padding-left: 0;
+    padding-right: 0;
+}
 </style>
 @endsection
 
@@ -26,24 +30,18 @@
                 <div class="box-body">
                     @include('backend.alert')
 
-                    <div class="row">
-                        <div class="col-4">
-                            <div class="form-group">
-                                <label for="first_name">First Name <span class="text-red">*</span></label>
-                                <input type="text" name="first_name" class="form-control" id="first_name" placeholder="Enter first name." value="{{ $user->first_name }}">
-                            </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4 px-0">
+                            <label for="first_name">First Name <span class="text-red">*</span></label>
+                            <input type="text" name="first_name" class="form-control" id="first_name" placeholder="Enter first name." value="{{ $user->first_name }}">
                         </div>
-                        <div class="col-4">
-                            <div class="form-group">
-                                <label for="middle_name">Middle Name</label>
-                                <input type="text" name="middle_name" class="form-control" id="middle_name" placeholder="Enter middle name." value="{{ $user->middle_name }}">
-                            </div>
+                        <div class="form-group col-md-4">
+                            <label for="middle_name">Middle Name</label>
+                            <input type="text" name="middle_name" class="form-control" id="middle_name" placeholder="Enter middle name." value="{{ $user->middle_name }}">
                         </div>
-                        <div class="col-4">
-                            <div class="form-group">
-                                <label for="last_name">Last Name <span class="text-red">*</span></label>
-                                <input type="text" name="last_name" class="form-control" id="last_name" placeholder="Enter last name." value="{{ $user->last_name }}">
-                            </div>
+                        <div class="form-group col-md-4 px-0">
+                            <label for="last_name">Last Name <span class="text-red">*</span></label>
+                            <input type="text" name="last_name" class="form-control" id="last_name" placeholder="Enter last name." value="{{ $user->last_name }}">
                         </div>
                     </div>
 

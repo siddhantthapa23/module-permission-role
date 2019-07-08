@@ -2,6 +2,7 @@
 
 namespace Modules\Administration\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Administration\Repositories\User\UserRepository;
@@ -316,6 +317,27 @@ class UserController extends Controller
         return response()->json([
             'type' => 'Error',
             'message' => 'Internal serve error, please try again later.'
+        ], 200);
+    }
+
+    /**
+     * Change status of the specified user.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function changeStatus(Request $request)
+    {
+        $user = $this->user->changeStatus($request->id, $request->status);
+        if ($user) {
+            return response()->json([
+                'type' => 'Success',
+                'message'=> 'Status has been changed successfully.'
+            ], 200);
+        }
+        return response()->json([
+            'type'=>'Error',
+            'message'=>'Internal server error, please try again later.',
         ], 200);
     }
 }

@@ -13,4 +13,6 @@ interface UserRepository
     public function updateUser(array $data): bool;
 
     public function deleteUser(): ?bool;
+
+    public function changeStatus(int $id, int $status) : int;
 }

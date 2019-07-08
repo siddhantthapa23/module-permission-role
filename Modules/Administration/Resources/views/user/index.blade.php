@@ -26,7 +26,7 @@
                     url: "{{ url('/administration/users') }}" +"/"+ id,
                     dataType: 'json',
                     success: function(response){
-                        if(response.type == 'success'){
+                        if(response.type == 'Success'){
                             var nRow = $($object).parents('tr')[0];
                             uTable.fnDeleteRow(nRow);
                             swal('Success',response.message, 'success').catch(swal.noop);
@@ -83,9 +83,11 @@
     <div class="col-xs-12">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <a href="{{ route('administration.users.create') }}">
-                    <button class="btn btn-primary"> Create User &nbsp;<i class="fa fa-plus"></i></button>
-                </a>
+                <h4 class="box-title">
+                    <a href="{{ route('administration.users.create') }}">
+                        <button class="btn btn-primary">Create User &nbsp;<i class="fa fa-plus"></i></button>
+                    </a>
+                </h4>
             </div>
     
             <!-- /.box-header -->
@@ -105,7 +107,7 @@
                             </tr>
                         </thead>
                         <tbody id="userTableBody">
-                            {{-- @foreach ($users as $user)
+                            @foreach ($users as $user)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $user->full_name }}</td>
@@ -134,7 +136,7 @@
                                         @endif
                                     </td>
                                 </tr>
-                            @endforeach --}}
+                            @endforeach
                         </tbody>
                         <tfoot>
                             <tr>

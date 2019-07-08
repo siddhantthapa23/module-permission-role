@@ -73,4 +73,14 @@ class UserRepositoryEloquent extends BaseRepositoryEloquent implements UserRepos
     {
         return $this->model->delete();
     }
+
+    /**
+     * @param int $id
+     * @param int $status
+     * @return int
+     */
+    public function changeStatus(int $id, int $status) : int
+    {
+        return $this->model->where('id', $id)->update(['status' => $status]);
+    }
 }

@@ -28,7 +28,7 @@ $(document).ready(function() {
                 url: "{{ url('/administration/users') }}" +"/"+ userId +"/roles/"+ roleName, 
                 dataType: 'json',
                 success: function(response){
-                    if(response.type == 'success'){
+                    if(response.type == 'Success'){
                         var nRow = $($object).parents('tr')[0];
                         rTable.fnDeleteRow(nRow);
                         swal('Success',response.message, 'success').catch(swal.noop);
@@ -67,7 +67,7 @@ $(document).ready(function() {
                 url: "{{ url('/administration/users') }}" +"/"+ userId +"/permissions/"+ permissionId, 
                 dataType: 'json',
                 success: function(response){
-                    if(response.type == 'success'){
+                    if(response.type == 'Success'){
                         var nRow = $($object).parents('tr')[0];
                         pTable.fnDeleteRow(nRow);
                         swal('Success',response.message, 'success').catch(swal.noop);
@@ -137,7 +137,7 @@ $(document).ready(function() {
                             <td>{{ ($user->address) ? $user->address : 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <th>Phone no:</th>
+                            <th>Phone no.</th>
                             <td>{{ ($user->phone) ? $user->phone : 'N/A' }}</td>
                         </tr>
                         <tr>
