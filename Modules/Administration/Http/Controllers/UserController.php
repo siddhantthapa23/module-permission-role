@@ -5,8 +5,13 @@ namespace Modules\Administration\Http\Controllers;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Administration\Repositories\User\UserRepository;
+use Modules\Administration\Repositories\Module\ModuleRepository;
+use Modules\Administration\Repositories\Role\RoleRepository;
+use Modules\Administration\Repositories\Permission\PermissionRepository;
 use Modules\Administration\Http\Requests\User\StoreRequest;
 use Modules\Administration\Http\Requests\User\UpdateRequest;
+use Modules\Administration\Http\Requests\User\RoleStoreRequest;
+use Modules\Administration\Http\Requests\User\PermissionStoreRequest;
 use Modules\Administration\Exceptions\User\CreateUserErrorException;
 use Modules\Administration\Exceptions\User\UpdateUserErrorException;
 use Modules\Administration\Repositories\User\UserRepositoryEloquent;
@@ -15,11 +20,23 @@ class UserController extends Controller
 {
     private $user;
 
+    private $module;
+
+    private $role;
+
+    private $permission;
+
     public function __construct(
-        UserRepository $user
+        UserRepository $user,
+        ModuleRepository $module,
+        RoleRepository $role,
+        PermissionRepository $permission
     )
     {
         $this->user = $user;
+        $this->module = $module;
+        $this->role = $role;
+        $this->permission = $permission;
         $this->destinationPath = 'uploads/administration/users/';
     }
     
@@ -154,6 +171,146 @@ class UserController extends Controller
             return response()->json([
                 'type' => 'Success',
                 'message' => 'User has been deleted successfully.'
+            ], 200);
+        }
+        return response()->json([
+            'type' => 'Error',
+            'message' => 'Internal serve error, please try again later.'
+        ], 200);
+    }
+
+    /**
+     * Display attach role view.
+     * @param int $id
+     * @return Response
+     */
+    public function attachRoleView(int $id)
+    {
+        return view('administration::user.attach_role')
+            ->withUserId($id)
+            ->withRoles($this->role->latest());
+    }
+
+    /**
+     * @param RoleStoreRequest $request
+     * @param int $id
+     * @return Reponse
+     */
+    public function storeRoles(RoleStoreRequest $request, int $id)
+    {
+        $user = $this->user->findUser($id);
+        
+        if($user->assignRole($request->roles)) {
+            return redirect()->route('administration.users.show', $id)
+                ->withSuccessMessage('Role has been attached successfully.');
+        }
+        return redirect()->back()->withInput()
+            ->withErrorMessage('Internal server error, please try again later.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * @param int $userId
+     * @param string $roleName
+     * @return Response
+     */
+    public function removeRole(int $userId, string $roleName)
+    {
+        $user = $this->user->findUser($userId);
+        $remove = $user->removeRole($roleName);
+
+        if($remove || is_null($remove)) {
+            return response()->json([
+                'type' => 'Success',
+                'message' => 'Role has been removed successfully.'
+            ], 200);
+        }
+        return response()->json([
+            'type' => 'Error',
+            'message' => 'Internal serve error, please try again later.'
+        ], 200);
+    }
+
+    /**
+     * Display attach permission view.
+     * @param int $id
+     * @return Response
+     */
+    public function attachPermissionView($id)
+    {
+        return view('administration::user.attach_permission')
+            ->withUser($this->user->findUser($id))
+            ->withModules($this->module->withHierarchy())
+            ->withPermissions($this->permission->groupByGuardName());
+    }
+
+    /**
+     * @param PermissionStoreRequest $request
+     * @param int $id
+     * @return Reponse
+     */
+    public function storePermissions(PermissionStoreRequest $request, int $id)
+    {
+        $user = $this->user->findUser($id);
+
+        /** get match permission array. */
+        $permissionArr = array_map(function ($permissionId) use ($user){
+            return $user->getMatchPermissions($permissionId);
+        }, $request->permissions);
+
+        $user = $user->syncPermissions($permissionArr);
+
+        $permissions = $user->getDirectPermissions()->toArray();
+        /** search for 'view' string in permission name and get match permission array. */
+        $matchPermissionArr = array_filter($permissions, function($permission) {
+            return strpos($permission['name'], 'view') !== false;
+        });
+
+        if(count($matchPermissionArr) > 0){
+            $filteredModuleArr = filter_modules($this->module->all()->toArray(), $matchPermissionArr);
+            $user = $user->syncModules($filteredModuleArr);
+        } else {
+            $user = $user->syncModules([]); // reset all modules for user.
+        }
+
+        if($user) {
+            return redirect()->route('administration.users.show', $id)
+                ->withSuccessMessage('Permissions has been attached successfully.');
+        }
+        return redirect()->back()->withInput()
+            ->withWarningMessage('Internal server error, please try again later.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * @param int $userId
+     * @param int $permissionId
+     * @return Response
+     */
+    public function removePermissionAndModule(int $userId, int $permissionId)
+    {
+        $user = $this->user->findUser($userId);
+        $permission = $this->permission->find($permissionId);
+        $user = $user->revokePermissionTo($permission);
+        
+        $permissions = $user->getDirectPermissions()->toArray();
+
+        /** search for 'view' string in permission name and get match permission array. */
+        $matchPermissionArr = array_filter($permissions, function($permission) {
+            return strpos($permission['name'], 'view') !== false;
+        });
+
+        if(count($matchPermissionArr) > 0){
+            $filteredModuleArr = $this->filterModule($matchPermissionArr);
+            $user = $user->syncModules($filteredModuleArr);
+        } else {
+            $user = $user->syncModules([]); // reset all modules for user.
+        }
+
+        if($user) {
+            return response()->json([
+                'type' => 'Success',
+                'message' => 'Permission has been removed successfully.'
             ], 200);
         }
         return response()->json([

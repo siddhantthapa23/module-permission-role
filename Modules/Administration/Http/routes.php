@@ -18,13 +18,13 @@ Route::group(['middleware' => 'web', 'prefix' => 'administration', 'as' => 'admi
         /** user attach role routes */
         Route::get('users/{id}/attach-role', 'UserController@attachRoleView')->name('users.attach-role')->middleware('role:admin');
         Route::post('users/{id}/attach-role', 'UserController@storeRoles')->name('users.attach-role.store');
-        Route::Delete('users/{userId}/roles/{roleName}', 'UserController@removeRole')->middleware('role:admin');
+        Route::Delete('users/{userId}/roles/{roleName}', 'UserController@removeRole')->name('users.remove-role')->middleware('role:admin');
         /** user attach role routes end */
 
         /** user attach permission routes */
         Route::get('users/{id}/attach-permission', 'UserController@attachPermissionView')->name('users.attach-permission')->middleware('role:admin');
         Route::post('users/{id}/attach-permission', 'UserController@storePermissions')->name('users.attach-permission.store');
-        Route::Delete('users/{userId}/permissions/{permissionId}', 'UserController@removePermissionAndModule')->middleware('role:admin');
+        Route::Delete('users/{userId}/permissions/{permissionId}', 'UserController@removePermissionAndModule')->name('users.remove-permission')->middleware('role:admin');
         /** user attach permission routes end */
     });
     /** user routes with permission middleware end */

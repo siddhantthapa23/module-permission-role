@@ -4,12 +4,15 @@ namespace Tests\Feature\Backend\User;
 
 use Tests\TestCase;
 use Modules\Administration\Entities\User;
+use Modules\Administration\Entities\Role;
 use Modules\Administration\Entities\Permission;
 use Illuminate\Http\UploadedFile;
 
 class UserTest extends TestCase
 {
     protected $user;
+
+    protected $role;
 
     /**
      * setup the test
@@ -19,6 +22,7 @@ class UserTest extends TestCase
         parent::setUp();
 
         $this->user = factory(User::class)->create();
+        $this->role = factory(Role::class)->create();
     }
 
     /**
@@ -190,4 +194,120 @@ class UserTest extends TestCase
             ->assertStatus(200)
             ->assertExactJson(['type' => 'Success', 'message' => 'User has been deleted successfully.']);
     }
+
+    /**
+     * @test
+     */
+    public function it_can_show_the_attach_role_view_page()
+    {
+        $permission = factory(Permission::class)->create(['name' => 'view user']);
+
+        $role = factory(Role::class)->create(['name' => 'admin']);
+        $role->givePermissionTo($permission);
+
+        $this->user->assignRole($role);
+
+        $this->actingAs($this->user)
+            ->get(route('administration.users.attach-role', $this->user->id))
+            ->assertStatus(200)
+            ->assertSee('Attach Role')
+            ->assertSee('Role')
+            ->assertSee('Submit');
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_attach_role_to_user()
+    {
+        $requestData = [
+            'roles' => [1]
+        ];
+
+        $permission = factory(Permission::class)->create(['name' => 'view user']);
+
+        $this->user->givePermissionTo($permission);
+
+        $this->actingAs($this->user)
+            ->post(route('administration.users.attach-role.store', $this->user->id), $requestData)
+            ->assertStatus(302)
+            ->assertRedirect(route('administration.users.show', $this->user->id))
+            ->assertSessionHas('success_message', 'Role has been attached successfully.');
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_remove_role_from_user()
+    {
+        $permission = factory(Permission::class)->create(['name' => 'view user']);
+
+        $role = factory(Role::class)->create(['name' => 'admin']);
+        $role->givePermissionTo($permission);
+
+        $this->user->assignRole($role);
+
+        $this->actingAs($this->user)
+            ->delete(route('administration.users.remove-role', [$this->user->id, $this->role->name]))
+            ->assertStatus(200)
+            ->assertExactJson(['type' => 'Success', 'message' => 'Role has been removed successfully.']);
+    }
+    
+    /**
+     * @test
+     */
+    public function it_can_show_the_attach_permission_view_page()
+    {
+        $permission = factory(Permission::class)->create(['name' => 'view user']);
+
+        $role = factory(Role::class)->create(['name' => 'admin']);
+        $role->givePermissionTo($permission);
+
+        $this->user->assignRole($role);
+
+        $this->actingAs($this->user)
+            ->get(route('administration.users.attach-permission', $this->user->id))
+            ->assertStatus(200)
+            ->assertSee('Attach Permission')
+            ->assertSee('Save');
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_attach_permission_to_user()
+    {
+        $requestData = [
+            'permissions' => [1,2]
+        ];
+
+        $permission = factory(Permission::class)->create(['name' => 'view user']);
+
+        $this->user->givePermissionTo($permission);
+
+        $this->actingAs($this->user)
+            ->post(route('administration.users.attach-permission.store', $this->user->id), $requestData)
+            ->assertStatus(302)
+            ->assertRedirect(route('administration.users.show', $this->user->id))
+            ->assertSessionHas('success_message', 'Permissions has been attached successfully.');
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_remove_permission_from_user()
+    {
+        $permission = factory(Permission::class)->create(['name' => 'view user']);
+
+        $role = factory(Role::class)->create(['name' => 'admin']);
+        $role->givePermissionTo($permission);
+
+        $this->user->assignRole($role);
+
+        $this->actingAs($this->user)
+            ->delete(route('administration.users.remove-permission', [$this->user->id, $permission->id]))
+            ->assertStatus(200)
+            ->assertExactJson(['type' => 'Success', 'message' => 'Permission has been removed successfully.']);
+    }
+
 }

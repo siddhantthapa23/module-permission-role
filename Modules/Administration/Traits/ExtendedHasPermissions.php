@@ -2,13 +2,11 @@
 
 namespace Modules\Administration\Traits;
 
-use Spatie\Permission\Traits\HasPermissions as SpatieHasPermissions;
 use Modules\Administration\Registrars\PermissionRegistrar;
+use Illuminate\Database\Eloquent\Collection;
 
-trait HasPermissions
+trait ExtendedHasPermissions
 {
-    use SpatieHasPermissions;
-
     /**
      * Lookup all defined permissions and filter down to just those matching the specified id.
      * 
